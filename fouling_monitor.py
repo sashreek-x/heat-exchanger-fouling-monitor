@@ -127,3 +127,35 @@ def score(frame: pd.DataFrame, model: Pipeline, threshold: float) -> pd.DataFram
         "Inspect / clean", "Normal"
     )
     return data
+
+
+def add_thickness_estimate(scored: pd.DataFrame, deposit_conductivity_w_mk: float) -> pd.DataFrame:
+    """Convert fouling resistance to an equivalent deposit thickness in millimetres."""
+    if deposit_conductivity_w_mk <= 0:
+        raise ValueError("Deposit thermal conductivity must be greater than zero.")
+    result = scored.copy()
+    result["predicted_fouling_thickness_mm"] = (
+        result["predicted_fouling_resistance_m2k_w"] * deposit_conductivity_w_mk * 1_000
+    )
+    return result
+
+
+def forecast_hours_to_thickness(
+    scored: pd.DataFrame, target_thickness_mm: float, lookback_rows: int = 60
+) -> float | None:
+    """Estimate time to a thickness limit from the recent linear trend."""
+    required = {"runtime_hours", "predicted_fouling_thickness_mm"}
+    if not required.issubset(scored.columns) or target_thickness_mm <= 0:
+        return None
+    recent = scored.dropna(subset=list(required)).tail(lookback_rows)
+    if len(recent) < 8:
+        return None
+    x = recent["runtime_hours"].to_numpy(dtype=float)
+    y = recent["predicted_fouling_thickness_mm"].to_numpy(dtype=float)
+    slope, intercept = np.polyfit(x, y, 1)
+    if slope <= 0:
+        return None
+    if y[-1] >= target_thickness_mm:
+        return 0.0
+    target_hour = (target_thickness_mm - intercept) / slope
+    return max(0.0, float(target_hour - x[-1]))
