@@ -2,3 +2,14 @@ __pycache__/
 .streamlit/secrets.toml
 artifacts/
 *.py[cod]
+
+# Python environment
+.venv/
+
+# Generated demonstration data
+data/demo_synthetic.csv
+
+# Python caches
+__pycache__/
+*.pyc
+.pytest_cache/

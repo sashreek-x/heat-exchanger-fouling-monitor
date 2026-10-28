@@ -1,0 +1,16 @@
+project:
+  name: "Heat Exchanger Fouling Monitor"
+  random_state: 42
+training:
+  test_size: 0.2
+  cv_folds: 5
+  target: "fouling_resistance_m2K_W"
+  models:
+    - linear_regression
+    - random_forest
+    - gradient_boosting
+    - hist_gradient_boosting
+    - mlp
+heat_transfer:
+  area_m2: null
+  clean_U_W_m2K: null

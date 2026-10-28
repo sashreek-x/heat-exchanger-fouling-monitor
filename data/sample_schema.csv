@@ -1,0 +1,1 @@
+timestamp,hot_inlet_temp_C,hot_outlet_temp_C,cold_inlet_temp_C,cold_outlet_temp_C,hot_mass_flow_kg_s,cold_mass_flow_kg_s,hot_cp_kJ_kgK,cold_cp_kJ_kgK,pressure_drop_kPa,operating_hours,fouling_resistance_m2K_W
